@@ -1,0 +1,13 @@
+
+.graph{
+    margin-top: -38px;
+}
+.line{
+    width: 70px;
+    left: 37%;
+    position: relative;
+    transform: rotate(90deg);
+    background-color: black;
+    border: 3px black solid;
+    margin-top: 50px;
+}

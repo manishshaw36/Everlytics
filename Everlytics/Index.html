@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Everlytics Test Assignment</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+        crossorigin="anonymous">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <script>
+        var myItems;
+        var date = new Date;
+
+        date = `${date.getDate()} ${date.getMonth() + 1} ${date.getFullYear()}, ${date.getHours()} ${date.getMinutes()}`;
+
+        $.getJSON('./plant_dashboard.json', function (data) { // Getting data from JSON file
+            $("#date").text(date);
+            myItems = data;
+            console.log(myItems);
+            myItems = Object.keys(myItems).map(function (key) {
+                return [key, myItems[key]];
+            });
+            getData(myItems);
+        });
+
+        function getData(myItems) {
+
+            myItems.map((elem)=>{
+
+                var bgColor = 'success';  
+                var operating = (Math.round(elem[1].Operating * 100) / 100); // Rounding upto 2 decimal places
+                var design = (Math.round(elem[1].Design * 100) / 100); // Rounding upto 2 decimal places
+                var corrected = (Math.round(elem[1].Corrected * 100) / 100); // Rounding upto 2 decimal places
+
+                var width = 87 + (((operating - corrected) / corrected) * 100); // Here 87 is general width
+
+                if((elem[0] == "Plant Efficiency")|| (elem[0] == "Power Output"))
+                bgColor = 'warning';
+
+                if(elem[0] == "Unit Gross Heat Rate")
+                bgColor = "danger";
+
+                document.getElementById("data").innerHTML +=  // Reflecting data to HTML from JSON file
+                `<div class="card container pb-5">
+                    <div class="card-title my-3">
+                        <h3>${elem[0]}</h3>
+                        <span class="text-muted mb-5">${elem[1].Unit}</span>
+                        <hr class="line">
+                        <div class="graph p-1 bg-${bgColor}" style="width: ${width}%">
+                            <b>${operating}</b>
+                        </div>
+                        <div class="mr-5">
+                            <span>Design: ${design}</span> 
+                            <span class="float-right">Corrected: ${corrected}</span>
+                        </div>
+                    </div>
+                </div>`;
+            });
+        }
+
+
+    </script>
+</head>
+
+<body class="container">
+
+    <div class="header container">
+        <h1 class="my-3">Your Plant Name</h1>
+        <p class="float-md-left">Unit-1 with capacity 250 MW</p>
+        <div>
+            <div class="float-md-right">Select Unit:
+                <select>
+                    <option>Unit-1</option>
+                </select>
+            </div>
+            <div class="float-md-right pr-5">Select Plant:
+                <select>
+                    <option>Your Plant Name</option>
+                </select>
+            </div>
+        </div>
+        <p class="clearfix my-0 text-muted "></p>
+        <p class="text-muted float-left"><span id="date"></span>, Legend: <span class="text-success">Low Performance
+                Gap</span> | <span class="text-warning">Medium Performance Gap</span> | <span class="text-danger">High
+                Performance Gap</span></p>
+    </div>
+
+    <div class="card-columns" style="clear:both" id="data">
+        
+    </div>
+</body>
+
+</html>
